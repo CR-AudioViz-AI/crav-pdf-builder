@@ -1,308 +1,327 @@
-# PDF Builder Pro 🚀
+# PDF Builder Pro
 
-**Fortune 50 Quality | AI-Powered | Professional Documents**
+**Professional PDF creation with AI-powered content generation**
 
-Create stunning, professional PDF documents with drag-and-drop editing and AI-powered content generation. Built for CR AudioViz AI platform.
-
----
-
-## ✨ Features
-
-### Core Functionality
-✅ **5 Professional Templates** - Business Proposal, Technical Report, Creative Portfolio, Professional Resume, Blank Document
-✅ **Drag-and-Drop Editor** - Intuitive canvas-based document builder
-✅ **AI Content Generation** - GPT-4 powered content creation
-✅ **Multiple Element Types** - Text, headings, images, shapes, lines
-✅ **High-Quality PDF Export** - Vector-based output using jsPDF
-✅ **Multi-Page Support** - Create documents with unlimited pages
-✅ **Document Management** - Save, load, and manage all your PDFs
-✅ **Custom Styling** - Font, size, color, alignment controls
-✅ **Print-Ready Output** - Professional quality for printing
-
-### Technical Excellence
-✅ **TypeScript** - Full type safety throughout codebase
-✅ **Next.js 14** - Latest App Router with server components
-✅ **Responsive Design** - Works on desktop, tablet, mobile
-✅ **Supabase Integration** - Secure cloud database storage
-✅ **Credit System** - Integrated with CR AudioViz AI platform (20 credits per save)
-✅ **Row Level Security** - Users only see their own documents
-✅ **Real-time Updates** - Instant preview of changes
+Built by CR AudioViz AI | Part of the CR AudioViz AI Suite
 
 ---
 
-## 🎯 Use Cases
+## 🚀 Features
 
-- **Business Proposals** - Professional business documents
-- **Technical Reports** - Detailed documentation with formatting
-- **Creative Portfolios** - Showcase work beautifully
-- **Professional Resumes** - ATS-friendly resume creation
-- **White Papers** - Research and analysis documents
-- **Case Studies** - Customer success stories
-- **Marketing Materials** - Brochures and one-pagers
-- **Project Reports** - Status updates and deliverables
+- ✅ **Secure Authentication** - Supabase auth with session management
+- ✅ **Credit System** - Pay-per-use model with atomic transactions
+- ✅ **Payment Integration** - Stripe & PayPal support
+- ✅ **AI Content Generation** - OpenAI-powered text generation
+- ✅ **Professional Templates** - Business, technical, creative, and more
+- ✅ **Real-time Monitoring** - Health checks and error reporting
+- ✅ **Usage Analytics** - Telemetry tracking for optimization
+- ✅ **Mobile Responsive** - Works on all devices
+- ✅ **WCAG 2.2 AA** - Accessible to all users
 
 ---
 
-## 🚀 Quick Start
+## 📋 Prerequisites
 
-### Prerequisites
-- Node.js 18+ installed
-- Supabase account
-- OpenAI API key
-- GitHub account
-- Vercel account
+- Node.js 18.0.0 or higher
+- Supabase account with project created
+- Stripe account (for payments)
+- PayPal Business account (optional, for PayPal payments)
+- Vercel account (for deployment)
 
-### 1. Clone Repository
+---
+
+## 🔧 Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```env
+# Database
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+# AI Providers
+OPENAI_API_KEY=sk-your-openai-key
+ANTHROPIC_API_KEY=sk-ant-your-anthropic-key
+
+# Payment Processors
+STRIPE_SECRET_KEY=sk_live_your-stripe-key
+STRIPE_PUBLISHABLE_KEY=pk_live_your-stripe-key
+STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+
+PAYPAL_CLIENT_ID=your-paypal-client-id
+PAYPAL_CLIENT_SECRET=your-paypal-secret
+PAYPAL_WEBHOOK_ID=your-paypal-webhook-id
+
+# App Configuration
+NEXT_PUBLIC_APP_URL=https://your-app-url.vercel.app
+NODE_ENV=production
+
+# Javari AI Integration (optional)
+JAVARI_WEBHOOK_URL=https://your-javari-webhook-url
+```
+
+---
+
+## 📦 Installation
+
 ```bash
+# Clone the repository
 git clone https://github.com/CR-AudioViz-AI/crav-pdf-builder.git
 cd crav-pdf-builder
-```
 
-### 2. Install Dependencies
-```bash
+# Install dependencies
 npm install
-```
 
-### 3. Configure Environment Variables
-```bash
-cp .env.example .env.local
-```
+# Run database migrations
+# In Supabase SQL Editor, run:
+# 1. supabase/migrations/001_create_pdf_documents.sql
+# 2. supabase/migrations/002_payment_system.sql
+# 3. supabase/migrations/003_telemetry_error_logs.sql
 
-Edit `.env.local` with your credentials:
-```env
-# Supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-
-# OpenAI
-OPENAI_API_KEY=sk-your-openai-key
-
-# App Config
-NEXT_PUBLIC_APP_URL=http://localhost:3000
-NEXT_PUBLIC_CREDIT_COST=20
-```
-
-### 4. Set Up Database
-Run the migration in Supabase SQL Editor:
-```bash
-cat supabase/migrations/001_create_pdf_documents.sql
-```
-Copy the SQL and execute in your Supabase project dashboard.
-
-### 5. Run Development Server
-```bash
+# Start development server
 npm run dev
 ```
 
-Visit [http://localhost:3000](http://localhost:3000)
+Visit `http://localhost:3000` to see the app.
 
 ---
 
-## 📦 Deployment to Vercel
+## 🗄️ Database Setup
 
-### Option 1: Automated Deployment
+### 1. Run Migrations
+
+In your Supabase SQL Editor, execute these migrations in order:
+
+1. **001_create_pdf_documents.sql** - Core tables (PDF documents, user credits, transactions)
+2. **002_payment_system.sql** - Payment tables (receipts, logs, subscriptions)
+3. **003_telemetry_error_logs.sql** - Monitoring tables (errors, telemetry, analytics)
+
+### 2. Initial Data
+
+The migrations automatically create:
+- Subscription plans (free, starter, pro, business, enterprise)
+- RLS policies for security
+- Indexes for performance
+- Analytics views
+
+---
+
+## 💳 Payment Configuration
+
+### Stripe Setup
+
+1. **Create Products** in Stripe Dashboard:
+   - Starter Pack: $9.99 → 100 credits (price_starter)
+   - Pro Pack: $39.99 → 500 credits (price_pro)
+   - Business Pack: $149.99 → 2000 credits (price_business)
+   - Enterprise Pack: $499.99 → 10000 credits (price_enterprise)
+
+2. **Configure Webhook**:
+   - URL: `https://your-app.vercel.app/api/webhooks/stripe`
+   - Events: `checkout.session.completed`, `payment_intent.succeeded`, `payment_intent.payment_failed`
+
+### PayPal Setup
+
+1. **Create Plans** in PayPal Developer Dashboard
+2. **Configure Webhook**:
+   - URL: `https://your-app.vercel.app/api/webhooks/paypal`
+   - Events: `PAYMENT.CAPTURE.COMPLETED`, `PAYMENT.CAPTURE.DENIED`
+
+---
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
 ```bash
 # Install Vercel CLI
 npm i -g vercel
 
-# Login to Vercel
-vercel login
-
 # Deploy
 vercel --prod
+
+# Configure environment variables in Vercel Dashboard
 ```
 
-### Option 2: GitHub Integration
-1. Push code to GitHub
-2. Go to [Vercel Dashboard](https://vercel.com/dashboard)
-3. Click "New Project"
-4. Import your repository
-5. Configure environment variables
-6. Deploy
+### Manual Deployment
 
-### Environment Variables in Vercel
-Set these in Project Settings → Environment Variables:
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `OPENAI_API_KEY`
-- `NEXT_PUBLIC_APP_URL` (your Vercel URL)
-- `NEXT_PUBLIC_CREDIT_COST=20`
+```bash
+# Build the project
+npm run build
+
+# Start production server
+npm start
+```
 
 ---
 
-## 🏗️ Project Structure
+## 📊 API Endpoints
+
+### Public Endpoints
+
+- `GET /api/health` - Health check and system status
+- `GET /api/credits/purchase` - Get available credit packages
+- `POST /api/credits/purchase` - Initiate credit purchase
+
+### Authenticated Endpoints
+
+- `GET /api/credits/balance` - Get user's credit balance
+- `POST /api/credits/deduct` - Deduct credits (internal use)
+- `POST /api/telemetry` - Log usage analytics
+- `POST /api/errors/report` - Report application errors
+
+### Webhook Endpoints
+
+- `POST /api/webhooks/stripe` - Stripe payment webhook
+- `POST /api/webhooks/paypal` - PayPal payment webhook
+
+---
+
+## 🎯 Credit Costs
+
+- **Save Document**: 5 credits per save
+- **AI Content Generation**: Varies by length (5-20 credits)
+- **Export PDF**: Free (no credits required)
+
+---
+
+## 🔒 Security Features
+
+- ✅ Row-Level Security (RLS) on all database tables
+- ✅ JWT-based authentication with Supabase
+- ✅ Rate limiting (10 requests/minute per user)
+- ✅ Webhook signature verification
+- ✅ Server-side user verification (no client spoofing)
+- ✅ Atomic credit transactions with rollback
+- ✅ Error reporting without exposing sensitive data
+
+---
+
+## 📈 Monitoring
+
+### Health Checks
+
+```bash
+curl https://your-app.vercel.app/api/health
+```
+
+Returns:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2025-11-18T...",
+  "service": "pdf-builder",
+  "checks": {
+    "database": { "status": "healthy", "latency_ms": 45 },
+    "api": { "status": "healthy" }
+  }
+}
+```
+
+### Error Tracking
+
+All errors are automatically logged to the `error_logs` table with:
+- Severity level (low/medium/high/critical)
+- Component/file location
+- Stack trace
+- User context
+
+### Usage Analytics
+
+Telemetry tracks:
+- Page views
+- Feature usage
+- Conversion events
+- User milestones
+
+---
+
+## 🧪 Testing
+
+```bash
+# Run linter
+npm run lint
+
+# Type checking
+npx tsc --noEmit
+
+# Build check
+npm run build
+```
+
+---
+
+## 🛠️ Development
+
+### Project Structure
 
 ```
 crav-pdf-builder/
 ├── app/
-│   ├── api/
-│   │   ├── generate-content/   # AI content generation
-│   │   └── credits/
-│   │       └── deduct/          # Credit deduction
-│   ├── globals.css              # Global styles
-│   ├── layout.tsx               # Root layout
-│   └── page.tsx                 # Main PDF builder page
+│   ├── api/               # API routes
+│   │   ├── credits/       # Credit management
+│   │   ├── health/        # Health monitoring
+│   │   ├── webhooks/      # Payment webhooks
+│   │   ├── telemetry/     # Usage tracking
+│   │   └── errors/        # Error reporting
+│   ├── layout.tsx         # Root layout with Error Boundary
+│   └── page.tsx           # Main PDF builder interface
+├── components/
+│   └── ErrorBoundary.tsx  # Error boundary component
 ├── lib/
-│   ├── pdf-generator.ts         # jsPDF integration
-│   └── supabase.ts              # Supabase client
-├── types/
-│   └── pdf.ts                   # TypeScript definitions
+│   ├── supabase-client.ts # Supabase utilities
+│   └── pdf-generator.ts   # PDF generation logic
 ├── supabase/
-│   └── migrations/
-│       └── 001_create_pdf_documents.sql
-├── next.config.js
-├── package.json
-├── tailwind.config.js
-├── tsconfig.json
-└── README.md
+│   └── migrations/        # Database migrations
+├── types/
+│   └── pdf.ts             # TypeScript types
+└── public/                # Static assets
 ```
-
----
-
-## 💡 How to Use
-
-### Creating a Document
-1. Select a template or start with blank
-2. Click "Add Elements" to add text, headings, or images
-3. Click elements to edit content
-4. Use properties panel to customize styling
-5. Use AI generator for instant content creation
-
-### AI Content Generation
-1. Click "AI Content Generator" in sidebar
-2. Describe what content you need
-3. Click "Generate with AI"
-4. AI creates multiple sections automatically
-5. Edit generated content as needed
-
-### Exporting PDF
-1. Click "Export PDF" button
-2. High-quality PDF downloads instantly
-3. Print-ready, professional output
-
-### Saving Documents
-1. Click "Save" button (uses 20 credits)
-2. Document stored securely in cloud
-3. Access anytime from any device
-
----
-
-## 🎨 Customization
-
-### Adding New Templates
-Edit `app/page.tsx` and add to `TEMPLATES` array:
-```typescript
-{
-  id: 'my-template',
-  name: 'My Template',
-  category: 'custom',
-  description: 'Custom template description',
-  thumbnail: '/templates/my-template.png'
-}
-```
-
-### Custom Styling
-Edit `tailwind.config.js` to add brand colors:
-```javascript
-colors: {
-  primary: '#your-color',
-  secondary: '#your-color',
-  accent: '#your-color',
-}
-```
-
-### Credit Cost
-Change credit cost in `.env`:
-```env
-NEXT_PUBLIC_CREDIT_COST=30
-```
-
----
-
-## 🔒 Security
-
-- **Row Level Security (RLS)** - Users only access their documents
-- **Authentication Required** - Must be signed in to save
-- **Service Role Key** - Server-side operations only
-- **Environment Variables** - Secrets never exposed to client
-- **API Rate Limiting** - Prevent abuse
-- **Input Validation** - All user inputs sanitized
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Build Errors
-```bash
-# Clear cache and rebuild
-rm -rf .next node_modules
-npm install
-npm run build
-```
+### "Insufficient credits" error
+- Check user's credit balance in `user_credits` table
+- Verify credit transactions in `credit_transactions` table
 
-### Database Errors
+### Payment not processing
+- Check webhook logs in Stripe/PayPal dashboard
+- Verify webhook secret matches environment variable
+- Check `payment_logs` table for errors
+
+### Database connection errors
 - Verify Supabase credentials in `.env.local`
-- Run migration SQL in Supabase dashboard
-- Check RLS policies are enabled
-
-### AI Generation Not Working
-- Verify OpenAI API key is valid
-- Check API key has sufficient credits
-- Review error logs in browser console
+- Check RLS policies are correctly configured
+- Ensure migrations have been run
 
 ---
 
-## 📈 Performance
+## 📝 License
 
-- **First Load:** < 2 seconds
-- **Time to Interactive:** < 3 seconds
-- **PDF Generation:** < 1 second
-- **Lighthouse Score:** 95+
-
----
-
-## 💰 Revenue Model
-
-**Credit-Based System:**
-- 20 credits per document save
-- Typical pricing: $0.20 - $1.00 per PDF
-- Target: Freelancers, small businesses, students
-
-**Market Opportunity:**
-- 60M+ freelancers in US alone
-- $500B document creation market
-- Growing remote work trend
+Proprietary - CR AudioViz AI, LLC
 
 ---
 
 ## 🤝 Support
 
-**Documentation:** [View Docs](https://docs.craudiovizai.com)
-**Support Email:** support@craudiovizai.com
-**GitHub Issues:** [Report Bug](https://github.com/CR-AudioViz-AI/crav-pdf-builder/issues)
+- Website: https://craudiovizai.com
+- Email: support@craudiovizai.com
+- Documentation: https://docs.craudiovizai.com
 
 ---
 
-## 📜 License
+## 🎉 Credits
 
-Proprietary - © 2025 CR AudioViz AI, LLC
-All rights reserved.
+Built with:
+- [Next.js 14](https://nextjs.org)
+- [Supabase](https://supabase.com)
+- [Stripe](https://stripe.com)
+- [PayPal](https://paypal.com)
+- [OpenAI](https://openai.com)
+- [Tailwind CSS](https://tailwindcss.com)
 
----
-
-## 🚀 Roadmap
-
-- [ ] More templates (10+ additional)
-- [ ] Collaboration features
-- [ ] Version history
-- [ ] Cloud storage integration
-- [ ] Mobile app
-- [ ] Advanced AI features
-- [ ] Template marketplace
-
----
-
-**Built with ❤️ by CR AudioViz AI**
-**Fortune 50 Quality | Production Ready | Revenue Generating**
+**Version:** 1.0.0  
+**Last Updated:** November 18, 2025
