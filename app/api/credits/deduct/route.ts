@@ -1,70 +1,111 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { deductCreditsAtomic } from '@/lib/supabase-client'
+import { createSupabaseBrowserClient } from '@/lib/supabase-client'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// Rate limiting (simple in-memory for now)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
+const RATE_LIMIT = 10 // requests per minute
+const RATE_WINDOW = 60 * 1000 // 1 minute
+
+function checkRateLimit(userId: string): boolean {
+  const now = Date.now()
+  const userLimit = rateLimitMap.get(userId)
+
+  if (!userLimit || now > userLimit.resetAt) {
+    rateLimitMap.set(userId, { count: 1, resetAt: now + RATE_WINDOW })
+    return true
+  }
+
+  if (userLimit.count >= RATE_LIMIT) {
+    return false
+  }
+
+  userLimit.count++
+  return true
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { user_id, amount, reason } = body
-
-    if (!user_id || !amount) {
+    // SECURITY: Get auth token from header
+    const authHeader = request.headers.get('authorization')
+    
+    if (!authHeader?.startsWith('Bearer ')) {
       return NextResponse.json(
-        { error: 'User ID and amount are required' },
+        { error: 'Unauthorized - No auth token provided' },
+        { status: 401 }
+      )
+    }
+
+    // SECURITY: Verify the token is valid
+    const token = authHeader.substring(7)
+    const supabase = createSupabaseBrowserClient()
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token)
+
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Invalid token' },
+        { status: 401 }
+      )
+    }
+
+    // SECURITY: Rate limiting to prevent abuse
+    if (!checkRateLimit(user.id)) {
+      return NextResponse.json(
+        { error: 'Rate limit exceeded. Try again later.' },
+        { status: 429 }
+      )
+    }
+
+    // Parse request body
+    const body = await request.json()
+    const { amount, reason } = body
+
+    // Validation
+    if (!amount || typeof amount !== 'number' || amount <= 0) {
+      return NextResponse.json(
+        { error: 'Invalid amount. Must be a positive number.' },
         { status: 400 }
       )
     }
 
-    // Get current credits
-    const { data: userData, error: fetchError } = await supabase
-      .from('user_credits')
-      .select('credits')
-      .eq('user_id', user_id)
-      .single()
-
-    if (fetchError) throw fetchError
-
-    const currentCredits = userData?.credits || 0
-
-    if (currentCredits < amount) {
+    if (amount > 1000) {
       return NextResponse.json(
-        { error: 'Insufficient credits' },
-        { status: 402 }
+        { error: 'Amount exceeds maximum (1000 credits per transaction)' },
+        { status: 400 }
       )
     }
 
-    // Deduct credits
-    const { error: updateError } = await supabase
-      .from('user_credits')
-      .update({ credits: currentCredits - amount })
-      .eq('user_id', user_id)
+    // SECURITY: Use authenticated user's ID, NOT from request body
+    const result = await deductCreditsAtomic(
+      user.id, // Use verified user ID, not client-provided
+      amount,
+      reason || 'Credit usage'
+    )
 
-    if (updateError) throw updateError
-
-    // Log transaction
-    await supabase
-      .from('credit_transactions')
-      .insert({
-        user_id,
-        amount: -amount,
-        reason: reason || 'Credit usage',
-        created_at: new Date().toISOString()
-      })
+    if (!result.success) {
+      return NextResponse.json(
+        { 
+          error: result.error,
+          remaining: result.remaining,
+          required: result.required
+        },
+        { status: 402 } // Payment Required
+      )
+    }
 
     return NextResponse.json({
       success: true,
-      remaining_credits: currentCredits - amount
+      remaining: result.remaining,
+      deducted: amount
     })
 
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('Credit deduction error:', message)
     
+    // Don't expose internal errors to client
     return NextResponse.json(
-      { error: message },
+      { error: 'Internal server error. Please try again.' },
       { status: 500 }
     )
   }
