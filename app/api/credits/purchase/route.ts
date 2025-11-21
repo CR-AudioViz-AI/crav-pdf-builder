@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createSupabaseBrowserClient } from '@/lib/supabase-client'
 import Stripe from 'stripe'
 
+// Force dynamic rendering - don't pre-render at build time
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia'
 })
