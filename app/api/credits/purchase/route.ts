@@ -107,7 +107,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function createStripeCheckout(userId: string, package: any) {
+async function createStripeCheckout(userId: string, creditPackage: any) {
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -116,10 +116,10 @@ async function createStripeCheckout(userId: string, package: any) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${package.name} - ${package.credits} Credits`,
-              description: `Purchase ${package.credits} credits for CR AudioViz AI apps`,
+              name: `${creditPackage.name} - ${creditPackage.credits} Credits`,
+              description: `Purchase ${creditPackage.credits} credits for CR AudioViz AI apps`,
             },
-            unit_amount: package.price,
+            unit_amount: creditPackage.price,
           },
           quantity: 1,
         },
@@ -129,8 +129,8 @@ async function createStripeCheckout(userId: string, package: any) {
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/apps/pdf-builder?payment=cancelled`,
       metadata: {
         user_id: userId,
-        price_id: package.stripePriceId,
-        credits: package.credits.toString()
+        price_id: creditPackage.stripePriceId,
+        credits: creditPackage.credits.toString()
       }
     })
 
@@ -146,7 +146,7 @@ async function createStripeCheckout(userId: string, package: any) {
   }
 }
 
-async function createPayPalPayment(userId: string, package: any) {
+async function createPayPalPayment(userId: string, creditPackage: any) {
   try {
     // Get PayPal access token
     const auth = Buffer.from(
@@ -182,11 +182,11 @@ async function createPayPalPayment(userId: string, package: any) {
           {
             amount: {
               currency_code: 'USD',
-              value: (package.price / 100).toFixed(2)
+              value: (creditPackage.price / 100).toFixed(2)
             },
-            description: `${package.name} - ${package.credits} Credits`,
+            description: `${creditPackage.name} - ${creditPackage.credits} Credits`,
             custom_id: userId,
-            invoice_id: package.id.toUpperCase() + '_PLAN'
+            invoice_id: creditPackage.id.toUpperCase() + '_PLAN'
           }
         ],
         application_context: {
