@@ -1,4 +1,5 @@
 import './globals.css'
+import Script from 'next/script';
 import { Inter } from 'next/font/google'
 import ErrorBoundary from '@/components/ErrorBoundary'
 
@@ -49,6 +50,8 @@ export default function RootLayout({
           aria-atomic="true"
           className="sr-only"
         />
+              {/* Javari AI Assistant */}
+        <Script src="https://javariai.com/embed.js" strategy="lazyOnload" />
       </body>
     </html>
   )
