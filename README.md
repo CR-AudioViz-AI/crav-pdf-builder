@@ -67,8 +67,8 @@ JAVARI_WEBHOOK_URL=https://your-javari-webhook-url
 
 ```bash
 # Clone the repository
-git clone https://github.com/CR-AudioViz-AI/crav-pdf-builder.git
-cd crav-pdf-builder
+git clone https://github.com/CR-AudioViz-AI/javari-pdf-builder.git
+cd javari-pdf-builder
 
 # Install dependencies
 npm install
@@ -257,7 +257,7 @@ npm run build
 ### Project Structure
 
 ```
-crav-pdf-builder/
+javari-pdf-builder/
 ├── app/
 │   ├── api/               # API routes
 │   │   ├── credits/       # Credit management
