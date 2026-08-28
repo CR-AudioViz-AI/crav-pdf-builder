@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { createClient } from '@supabase/supabase-js';
+import { secretKey, supabaseUrl } from "@craudioviz/platform-sdk";
 
 const CREDIT_COSTS = {
   'images-to-pdf': 2,
@@ -21,8 +22,8 @@ const CREDIT_COSTS = {
 type ConversionType = keyof typeof CREDIT_COSTS;
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  supabaseUrl(),
+  secretKey()
 );
 
 const PAGE_DIMENSIONS: Record<string, [number, number]> = {
