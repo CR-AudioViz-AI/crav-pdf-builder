@@ -15,6 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument, PDFTextField, PDFCheckBox, PDFDropdown, PDFRadioGroup, rgb, StandardFonts } from 'pdf-lib';
 import { createClient } from '@supabase/supabase-js';
+import { secretKey, supabaseUrl } from "@craudioviz/platform-sdk";
 
 const CREDIT_COSTS = {
   fill: 3,
@@ -26,8 +27,8 @@ const CREDIT_COSTS = {
 type FormOperation = keyof typeof CREDIT_COSTS;
 
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  supabaseUrl(),
+  secretKey()
 );
 
 // ============================================================================

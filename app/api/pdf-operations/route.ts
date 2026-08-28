@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
 import { createClient } from '@supabase/supabase-js';
+import { secretKey, supabaseUrl } from "@craudioviz/platform-sdk";
 
 // Credit costs per operation
 const CREDIT_COSTS = {
@@ -37,8 +38,8 @@ type OperationType = keyof typeof CREDIT_COSTS;
 
 // Initialize Supabase
 const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  supabaseUrl(),
+  secretKey()
 );
 
 // ============================================================================
