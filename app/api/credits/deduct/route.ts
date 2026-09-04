@@ -1,6 +1,28 @@
+// 2026-09-05: rewired to the central credits API.
+//
+// This route imported deductCreditsAtomic and checkUserCredits from
+// @/lib/supabase-client. Neither function exists in that module or anywhere else
+// in this repository - they were never written. The route has therefore never
+// worked: it returns 401 to anonymous callers, and would throw for any
+// authenticated one.
+//
+// Webpack built it anyway. Turbopack, the default builder from Next 16, refuses
+// the import outright, which is the only reason anybody noticed.
+//
+// The correct home for this was always the central API. A satellite must not
+// implement its own atomic credit deduction - one ledger, one place it is
+// written, or two apps disagree about a customer's balance. CentralCredits was
+// already present in this repository and already points at /credits/spend.
+// 2026-09-05: import path corrected. createSupabaseServerClient and
+// createSupabaseBrowserClient are exported by @/lib/supabase, not by
+// @/lib/supabase-client, which exports createClient and createBrowserClient.
+//
+// The import has never been valid. Webpack built anyway and the route failed at
+// runtime; Turbopack, the default builder from Next 16, refuses it outright. The
+// upgrade did not break this - it revealed it.
 import { NextRequest, NextResponse } from 'next/server'
-import { deductCreditsAtomic } from '@/lib/supabase-client'
-import { createSupabaseBrowserClient } from '@/lib/supabase-client'
+import { CentralCredits } from '@/lib/central-services'
+import { createSupabaseServerClient } from '@/lib/supabase'
 
 // Rate limiting (simple in-memory for now)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
@@ -76,11 +98,12 @@ export async function POST(request: NextRequest) {
     }
 
     // SECURITY: Use authenticated user's ID, NOT from request body
-    const result = await deductCreditsAtomic(
-      user.id, // Use verified user ID, not client-provided
-      amount,
-      reason || 'Credit usage'
-    )
+    // The central ledger is authoritative and enforces the balance itself, so the
+    // user id is not passed: the call is authenticated as the caller and the
+    // server decides whose credits these are. That removes a whole class of bug
+    // where a satellite spends the wrong account's balance.
+    const central = await CentralCredits.spend(amount, reason || 'Credit usage')
+    const result = { success: central.success, ...(central.data ?? {}) }
 
     if (!result.success) {
       return NextResponse.json(
