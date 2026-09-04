@@ -1,5 +1,12 @@
+// 2026-09-05: import path corrected. createSupabaseServerClient and
+// createSupabaseBrowserClient are exported by @/lib/supabase, not by
+// @/lib/supabase-client, which exports createClient and createBrowserClient.
+//
+// The import has never been valid. Webpack built anyway and the route failed at
+// runtime; Turbopack, the default builder from Next 16, refuses it outright. The
+// upgrade did not break this - it revealed it.
 import { NextRequest, NextResponse } from 'next/server'
-import { createSupabaseBrowserClient, createSupabaseServerClient } from '@/lib/supabase-client'
+import { createSupabaseBrowserClient, createSupabaseServerClient } from '@/lib/supabase'
 
 interface TelemetryEvent {
   event_type: string // 'page_view', 'feature_used', 'error', 'conversion'
