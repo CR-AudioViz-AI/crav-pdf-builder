@@ -53,21 +53,12 @@ GRANT ALL ON pdf_documents TO authenticated;
 GRANT ALL ON pdf_documents TO service_role;
 
 -- Create user_credits table if it doesn't exist
-CREATE TABLE IF NOT EXISTS user_credits (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  credits INTEGER NOT NULL DEFAULT 0,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- 2026-09-07: CREATE TABLE user_credits removed — replaced by credit_wallets and credit_movements.
+
 
 -- Create credit_transactions table if it doesn't exist
-CREATE TABLE IF NOT EXISTS credit_transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  amount INTEGER NOT NULL,
-  reason TEXT,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- 2026-09-07: CREATE TABLE credit_transactions removed — replaced by credit_movements.
+
 
 -- Enable RLS on credits tables
 ALTER TABLE user_credits ENABLE ROW LEVEL SECURITY;
