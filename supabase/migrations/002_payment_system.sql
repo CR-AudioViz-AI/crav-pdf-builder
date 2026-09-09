@@ -111,20 +111,8 @@ CREATE INDEX IF NOT EXISTS idx_credit_transactions_metadata ON credit_transactio
 -- ============================================================================
 -- SUBSCRIPTION PLANS TABLE - For future subscription management
 -- ============================================================================
-CREATE TABLE IF NOT EXISTS subscription_plans (
-  id TEXT PRIMARY KEY, -- 'starter', 'pro', 'business', 'enterprise'
-  name TEXT NOT NULL,
-  description TEXT,
-  price INTEGER NOT NULL, -- Price in cents
-  currency TEXT NOT NULL DEFAULT 'usd',
-  credits_per_month INTEGER NOT NULL,
-  features JSONB DEFAULT '[]',
-  stripe_price_id TEXT,
-  paypal_plan_id TEXT,
-  active BOOLEAN DEFAULT true,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
-);
+-- 2026-09-07: CREATE TABLE subscription_plans removed — replaced by user_subscriptions.
+
 
 -- Enable RLS (read-only for all authenticated users)
 ALTER TABLE subscription_plans ENABLE ROW LEVEL SECURITY;
